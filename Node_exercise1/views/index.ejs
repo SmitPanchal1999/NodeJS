@@ -1,0 +1,45 @@
+<html>
+
+<head>
+
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    
+    <link rel="stylesheet" href="../Styles/style.css">
+</head>
+
+<body onload="getData()">
+    <div class="container-fluid no-padding">
+        <div class="container text-center" style="height: 100%;">
+            <div class="centerIt text-center" style="width: 70%;height: 500px;overflow-y:scroll ;">
+                <div style="height: 20px;margin-bottom: 10px;"></div>
+                <span ><input style="border: 1px solid black;" type="text" id="firstName" name="firstName"
+                        placeholder="First Name" required>
+                    <input style="border: 1px solid black;" type="text" id="lastName" name="lastName"
+                        placeholder="Last Name" required>
+
+                    <button id="addButton" class="btn btn-outline-primary btn-sm" onclick="add()"><i
+                            class="fa fa-plus-circle" aria-hidden="true"></i>&nbsp; Add</button>
+                    <button id="renderButton" class="btn btn-outline-primary btn-sm" onclick="renderData()">
+                            Render Data
+                    </button>
+                    <button id="updateButton" class="btn btn-outline-primary btn-sm" onclick="update()"><i
+                            class="fa fa-edit" aria-hidden="true"></i>&nbsp; Update</button>
+                    <button id="cancelButton" style="display: none;" class="btn btn-outline-danger btn-sm"
+                        onclick="cancelUpdate()">Cancel</button>
+
+                </span>
+                <div id="testing" style="height: 20px;margin-bottom: 10px;"></div>
+                <table id="table" class="text-center" style="width: 100%;">
+
+
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="../Javascripts/table.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,33 @@
+html,body{
+    height: 100%;
+}
+.container-fluid{
+    height: 100vh;
+    background: url(../assets/backG.jpg);
+
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.centerIt{
+    background-color:#faeaf5;
+    top: 50%;
+    left: 50%;
+    position:absolute;
+    transform: translate(-50%,-50%);
+   
+}
+button:disabled{
+    cursor: no-drop;
+}
+table, th, td {
+  
+    padding: 5px;
+  }
+table {
+    border-spacing: 15px;
+  }
+#updateButton{
+    display:none;
+}

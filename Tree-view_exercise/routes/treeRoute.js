@@ -184,6 +184,11 @@ router.put("/moveChild", async (req, res) => {
     }
     console.log(tags);
     console.log(matchTag, children);
+    if(!matchTag.hasOwnProperty(tags[0])){
+        console.log("neel")
+        res.status(400).send({ result: "notFound" }).end();
+    }
+    else{
     if (tags[1] > matchTag[tags[0]].length) {
         console.log("id=>>");
         res.status(400).send({ result: "notFound" }).end();
@@ -303,6 +308,7 @@ else{
     }
     }
 }
+    }
 })
 function dfsTraversal(start, visited, children, matchId, find, count, ans) {
     console.log(start);

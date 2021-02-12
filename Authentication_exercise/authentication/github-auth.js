@@ -2,7 +2,7 @@ const GithubStrategy = require( 'passport-github2' ).Strategy;
 const User=require("../Models/userModel");
 const passport=require("passport"); 
 
-
+require("dotenv").config();
 passport.serializeUser(function(user, done) {
     done(null, user);
   });
@@ -23,8 +23,8 @@ passport.serializeUser(function(user, done) {
   done(null,user);
   });
 passport.use(new GithubStrategy({
-    clientID:"cfae47210f3f508c50b4",
-    clientSecret: "b96d7add73582b8cd5ab23dbdd76c3f4059994b8",
+    clientID:String(process.env.GITHUB_CLIENT),
+    clientSecret:String(process.env.GITHUB_SECRET),
     callbackURL: "http://localhost:3000/auth/github/callback"
   },
   async function(request, accessToken, refreshToken, profile, done) {

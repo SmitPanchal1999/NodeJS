@@ -14,6 +14,8 @@ require("./authentication/facebook-auth");
 require("./authentication/github-auth");
 const cookieParser = require('cookie-parser');
 const auth=require("./Middlewares/auth");
+require("dotenv").config();
+console.log(process.env.GOOGLE_CLIENT);
 connectDB();
 
 const isLoggedIn = (req, res, next) => {

@@ -1,7 +1,7 @@
 const FacebookStrategy = require( 'passport-facebook' ).Strategy;
 const User=require("../Models/userModel");
 const passport=require("passport"); 
-
+require("dotenv").config();
 
 passport.serializeUser(function(user, done) {
     done(null, user);
@@ -22,8 +22,8 @@ passport.serializeUser(function(user, done) {
   done(null,user);
   });
 passport.use(new FacebookStrategy({
-    clientID:"1354123924950971",
-    clientSecret: "dae5bab515081608005bb2f29fba4718",
+    clientID:String(process.env.FACEBOOK_CLIENT),
+    clientSecret:String(process.env.FACEBOOK_SECRET),
     callbackURL: "http://localhost:3000/auth/facebook/callback",
     profileFields: ['id', 'displayName', 'photos', 'email', 'gender', 'name']
   },

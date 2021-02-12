@@ -1,0 +1,20 @@
+html,body{
+    height: 100%;
+}
+.container-fluid{
+    height: 100vh;
+ 
+
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.centerIt{
+    background-color:#ffe066;
+    top: 50%;
+    left: 50%;
+    position:absolute;
+    transform: translate(-50%,-50%);
+   
+}

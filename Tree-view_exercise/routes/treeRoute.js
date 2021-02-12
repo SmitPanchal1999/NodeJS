@@ -184,6 +184,11 @@ router.put("/moveChild", async (req, res) => {
     }
     console.log(tags);
     console.log(matchTag, children);
+    if(!matchTag.hasOwnProperty(tags[0])){
+        console.log("neel")
+        res.status(400).send({ result: "notFound" }).end();
+    }
+    else{
     if (tags[1] > matchTag[tags[0]].length) {
         console.log("id=>>");
         res.status(400).send({ result: "notFound" }).end();
@@ -239,6 +244,7 @@ router.put("/moveChild", async (req, res) => {
         
     }
 }
+else{
     console.log("smit");
     let orderOfParent, orderOfChild;
     try {
@@ -247,7 +253,7 @@ router.put("/moveChild", async (req, res) => {
     }
     catch (err) {
         res.status(500).send({result:"error"});
-        next();
+      
     }
     console.log("here");
     const substractOrAdd = orderOfParent.order + 1 - orderOfChild.order;
@@ -264,7 +270,7 @@ router.put("/moveChild", async (req, res) => {
     catch (er) {
         console.log(er);
         res.status(500).send({result:"error"});
-        next();
+        
     }
     if (children.hasOwnProperty(req.body.parentId)) {
       
@@ -291,15 +297,17 @@ router.put("/moveChild", async (req, res) => {
         
         console.log(ids);
            res.status(200).send({result:"good"});
-           next();
+           
 
     }
     else {
         res.status(200).send({ result: "good" });
-        next();
+      
     }
 
     }
+    }
+}
     }
 })
 function dfsTraversal(start, visited, children, matchId, find, count, ans) {

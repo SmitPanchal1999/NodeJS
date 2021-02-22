@@ -119,195 +119,256 @@ router.put("/moveChild", async (req, res) => {
     let tags = req.body.tagName;
     tags = tags.split(".");
     console.log(tags);
-    if(!isFinite(tags[1]) || tags.length != 2){
+    if (!isFinite(tags[1]) || tags.length != 2) {
         console.log("first");
         res.status(400).send({ result: "bad" }).end();
-        
-    }
-   
-    else{
-    let records;
-    try {
-        records = await Tag.find();
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).send({result:"error"}).end();
-   
-    }
-    let orders = {};
-    let matchTag = {};
-    let children = {};
-    let roots = [];
-    let matchId = {};
-    for (let i = 0; i < records.length; i++) {
-        matchId[String(records[i]._id)] = records[i].tagName;
-        orders[String(records[i]._id)] = records[i].order;
-        if (records[i].parentId == null) {
 
-            roots.push(String(records[i]._id));
-            if (matchTag.hasOwnProperty(records[i].tagName)) {
-                matchTag[records[i].tagName].push(String(records[i]._id));
+    }
 
-            }
-            else {
-                matchTag[records[i].tagName] = [];
-                matchTag[records[i].tagName].push(String(records[i]._id));
-            }
-            continue
+    else {
+        let records;
+        try {
+            records = await Tag.find();
         }
-        if (children.hasOwnProperty(String(records[i].parentId))) {
-            children[String(records[i].parentId)].push({ id: String(records[i]._id), tagName: records[i].tagName });
-            if (matchTag.hasOwnProperty(records[i].tagName)) {
-                matchTag[records[i].tagName].push(String(records[i]._id));
-
-            }
-            else {
-                matchTag[records[i].tagName] = [];
-                matchTag[records[i].tagName].push(String(records[i]._id));
-            }
+        catch (err) {
+            console.log(err);
+            res.status(500).send({ result: "error" }).end();
 
         }
-        else {
-            children[String(records[i].parentId)] = [];
-            if (matchTag.hasOwnProperty(records[i].tagName)) {
-                matchTag[records[i].tagName].push(String(records[i]._id));
+        let orders = {};
+        let matchTag = {};
+        let children = {};
+        let roots = [];
+        let matchId = {};
+        for (let i = 0; i < records.length; i++) {
+            matchId[String(records[i]._id)] = records[i].tagName;
+            orders[String(records[i]._id)] = records[i].order;
+            if (records[i].parentId == null) {
 
+                roots.push(String(records[i]._id));
+                if (matchTag.hasOwnProperty(records[i].tagName)) {
+                    matchTag[records[i].tagName].push(String(records[i]._id));
+
+                }
+                else {
+                    matchTag[records[i].tagName] = [];
+                    matchTag[records[i].tagName].push(String(records[i]._id));
+                }
+                continue
             }
-            else {
-                matchTag[records[i].tagName] = [];
-                matchTag[records[i].tagName].push(String(records[i]._id));
-            }
-            children[String(records[i].parentId)].push({ id: String(records[i]._id), tagName: records[i].tagName });
+            if (children.hasOwnProperty(String(records[i].parentId))) {
+                children[String(records[i].parentId)].push({ id: String(records[i]._id), tagName: records[i].tagName });
+                if (matchTag.hasOwnProperty(records[i].tagName)) {
+                    matchTag[records[i].tagName].push(String(records[i]._id));
 
-        }
-    }
-    console.log(tags);
-    console.log(matchTag, children);
-    if(!matchTag.hasOwnProperty(tags[0])){
-        console.log("neel")
-        res.status(400).send({ result: "notFound" }).end();
-    }
-    else{
-    if (tags[1] > matchTag[tags[0]].length) {
-        console.log("id=>>");
-        res.status(400).send({ result: "notFound" }).end();
-        
-    }
-    else{
-    let ans = { value: 0 };
-    let visited = {};
-    for (let i = 0; i < roots.length; i++) {
-        console.log(roots[i]);
-        visited = {};
-        console.log(ans);
-
-        dfsTraversal(roots[i], visited, children, matchId, tags[0], tags[1], ans);
-        if (ans["value"] == tags[1]) {
-            break;
-        }
-    }
-  
-    console.log(ans);
-    if(String(ans["id"])==String(req.body.parentId)){
-        console.log("id===");
-        res.status(400).send({result:"bad"}).end();
-        next();
-    }
-
-    let ids = [];
-    if (children.hasOwnProperty(String(req.body.parentId))) {
-        console.log("check properly");
-    for (let i = 0; i < children[String(req.body.parentId)].length; i++) {
-        ids.push(children[String(req.body.parentId)][i].id);
-    }
-   
-    let iterator = 0;
-    let l = ids.length;
-    while (iterator < l) {
-         
-        if (children.hasOwnProperty(ids[iterator])) {
-            for (let j = 0; j < children[ids[iterator]].length; j++) {
-                if (ids.indexOf(children[ids[iterator]][j].id)) {
-                    ids.push(children[ids[iterator]][j].id);
+                }
+                else {
+                    matchTag[records[i].tagName] = [];
+                    matchTag[records[i].tagName].push(String(records[i]._id));
                 }
 
             }
-        }
+            else {
+                children[String(records[i].parentId)] = [];
+                if (matchTag.hasOwnProperty(records[i].tagName)) {
+                    matchTag[records[i].tagName].push(String(records[i]._id));
 
-        iterator += 1;
-        l = ids.length
-    }
-    if(ids.includes(ans["id"])){
-        console.log("from here");
-        res.status(400).send({result:"bad"}).end();
-        
-    }
-}
-else{
-    console.log("smit");
-    let orderOfParent, orderOfChild;
-    try {
-        orderOfParent = await Tag.findOne({ _id: mongoose.Types.ObjectId(ans["id"]) }).select("order");
-        orderOfChild = await Tag.findOne({ _id: mongoose.Types.ObjectId(req.body.parentId) }).select("order");
-    }
-    catch (err) {
-        res.status(500).send({result:"error"});
-      
-    }
-    console.log("here");
-    const substractOrAdd = orderOfParent.order + 1 - orderOfChild.order;
+                }
+                else {
+                    matchTag[records[i].tagName] = [];
+                    matchTag[records[i].tagName].push(String(records[i]._id));
+                }
+                children[String(records[i].parentId)].push({ id: String(records[i]._id), tagName: records[i].tagName });
 
-
-    try {
-       await Tag.updateOne({ _id: mongoose.Types.ObjectId(req.body.parentId) }, {
-            $set: {
-                parentId: String(ans["id"]),
-                order: (orderOfParent.order + 1)
             }
-        });
-    }
-    catch (er) {
-        console.log(er);
-        res.status(500).send({result:"error"});
-        
-    }
-    if (children.hasOwnProperty(req.body.parentId)) {
-      
+        }
+        console.log(tags);
+        console.log(matchTag, children);
+        if (!matchTag.hasOwnProperty(tags[0])) {
+            console.log("neel")
+            res.status(400).send({ result: "notFound" }).end();
+        }
+        else {
+            if (tags[1] > matchTag[tags[0]].length) {
+                console.log("id=>>");
+                res.status(400).send({ result: "notFound" }).end();
+
+            }
+            else {
+                let ans = { value: 0 };
+                let visited = {};
+                for (let i = 0; i < roots.length; i++) {
+                    console.log(roots[i]);
+                    visited = {};
+                    console.log(ans);
+
+                    dfsTraversal(roots[i], visited, children, matchId, tags[0], tags[1], ans);
+                    if (ans["value"] == tags[1]) {
+                        break;
+                    }
+                }
+
+                console.log(ans);
+                if (String(ans["id"]) == String(req.body.parentId)) {
+                    console.log("id===");
+                    res.status(400).send({ result: "bad" }).end();
+                   
+                }
+
+                let ids = [];
+                if (children.hasOwnProperty(String(req.body.parentId))) {
+                    console.log("check properly");
+                    for (let i = 0; i < children[String(req.body.parentId)].length; i++) {
+                        ids.push(children[String(req.body.parentId)][i].id);
+                    }
+
+                    let iterator = 0;
+                    let l = ids.length;
+                    while (iterator < l) {
+
+                        if (children.hasOwnProperty(ids[iterator])) {
+                            for (let j = 0; j < children[ids[iterator]].length; j++) {
+                                if (ids.indexOf(children[ids[iterator]][j].id)) {
+                                    ids.push(children[ids[iterator]][j].id);
+                                }
+
+                            }
+                        }
+
+                        iterator += 1;
+                        l = ids.length
+                    }
+                    if (ids.includes(ans["id"])) {
+                        console.log("from here");
+                        res.status(400).send({ result: "bad" }).end();
+
+                    }
+                    else{
+                        console.log("smit");
+                    let orderOfParent, orderOfChild;
+                    try {
+                        orderOfParent = await Tag.findOne({ _id: mongoose.Types.ObjectId(ans["id"]) }).select("order");
+                        orderOfChild = await Tag.findOne({ _id: mongoose.Types.ObjectId(req.body.parentId) }).select("order");
+                    }
+                    catch (err) {
+                        res.status(500).send({ result: "error" });
+
+                    }
+                    console.log("here");
+                    const substractOrAdd = orderOfParent.order + 1 - orderOfChild.order;
 
 
-        
-        
+                    try {
+                        await Tag.updateOne({ _id: mongoose.Types.ObjectId(req.body.parentId) }, {
+                            $set: {
+                                parentId: String(ans["id"]),
+                                order: (orderOfParent.order + 1)
+                            }
+                        });
+                    }
+                    catch (er) {
+                        console.log(er);
+                        res.status(500).send({ result: "error" });
 
-       console.log("almost there");
-        for(let i=0;i<ids.length;i++) {
-            
-               
-       
-               
-               await Tag.updateOne({_id:mongoose.Types.ObjectId(ids[i])},{
-                   $set:{
-                       
-                       order:(orders[ids[i]]+substractOrAdd)
-                   }
-               });
-           }
-          
-         
-        
-        console.log(ids);
-           res.status(200).send({result:"good"});
-           
+                    }
+                    if (children.hasOwnProperty(req.body.parentId)) {
 
-    }
-    else {
-        res.status(200).send({ result: "good" });
-      
-    }
 
-    }
-    }
-}
+
+
+
+
+                        console.log("almost there");
+                        for (let i = 0; i < ids.length; i++) {
+
+
+
+
+                            await Tag.updateOne({ _id: mongoose.Types.ObjectId(ids[i]) }, {
+                                $set: {
+
+                                    order: (orders[ids[i]] + substractOrAdd)
+                                }
+                            });
+                        }
+
+
+
+                        console.log(ids);
+                        res.status(200).send({ result: "good" });
+
+
+                    }
+                    else {
+                        res.status(200).send({ result: "good" });
+
+                    }
+                    }
+                }
+                else {
+                    console.log("smit");
+                    let orderOfParent, orderOfChild;
+                    try {
+                        orderOfParent = await Tag.findOne({ _id: mongoose.Types.ObjectId(ans["id"]) }).select("order");
+                        orderOfChild = await Tag.findOne({ _id: mongoose.Types.ObjectId(req.body.parentId) }).select("order");
+                    }
+                    catch (err) {
+                        res.status(500).send({ result: "error" });
+
+                    }
+                    console.log("here");
+                    const substractOrAdd = orderOfParent.order + 1 - orderOfChild.order;
+
+
+                    try {
+                        await Tag.updateOne({ _id: mongoose.Types.ObjectId(req.body.parentId) }, {
+                            $set: {
+                                parentId: String(ans["id"]),
+                                order: (orderOfParent.order + 1)
+                            }
+                        });
+                    }
+                    catch (er) {
+                        console.log(er);
+                        res.status(500).send({ result: "error" });
+
+                    }
+                    if (children.hasOwnProperty(req.body.parentId)) {
+
+
+
+
+
+
+                        console.log("almost there");
+                        for (let i = 0; i < ids.length; i++) {
+
+
+
+
+                            await Tag.updateOne({ _id: mongoose.Types.ObjectId(ids[i]) }, {
+                                $set: {
+
+                                    order: (orders[ids[i]] + substractOrAdd)
+                                }
+                            });
+                        }
+
+
+
+                        console.log(ids);
+                        res.status(200).send({ result: "good" });
+
+
+                    }
+                    else {
+                        res.status(200).send({ result: "good" });
+
+                    }
+
+                }
+            }
+        }
     }
 })
 function dfsTraversal(start, visited, children, matchId, find, count, ans) {

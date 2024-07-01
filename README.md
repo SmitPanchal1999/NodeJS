@@ -1,17 +1,11 @@
-# Tree View Tag/File Structure
+# Tree View File Structure Project 
 
-This project is a RESTful API for managing a hierarchical tree structure of tags/filenames using NodeJS, Express and MongoDB. It supports various operations such as adding root tags, adding child tags, removing child tags along with their descendants, updating tags, retrieving all tags, and moving child tags within the hierarchy.
+This project is a RESTful API for managing a hierarchical tree structure of tags using Express and MongoDB. It supports various operations such as adding root tags, adding child tags, removing child tags along with their descendants, updating tags, retrieving all tags, and moving child tags within the hierarchy.
 
 ## Table of Contents
 
 - [Getting Started](#getting-started)
 - [API Endpoints](#api-endpoints)
-  - [Add Root Tag](#add-root-tag)
-  - [Add Child Tag](#add-child-tag)
-  - [Remove Child Tag](#remove-child-tag)
-  - [Update Tag](#update-tag)
-  - [Get All Tags](#get-all-tags)
-  - [Move Child Tag](#move-child-tag)
 - [Technologies Used](#technologies-used)
 
 ## Getting Started
@@ -52,33 +46,31 @@ The server will be running on `http://localhost:3000`.
 
 - **URL**: `/addRoot`
 - **Method**: `POST`
-- **Description**: Adds a new root tag.
+- **Description**: Adds a new root tag to the database. A root tag is a top-level tag with no parent.
 - **Body Parameters**:
-  - `tagName` (string): The name of the tag.
+  - `tagName` (string): Name of the root tag.
 - **Response**:
-  - `200 OK` with the ID of the newly created tag.
+  - `200 OK` on successful creation, returns the ID of the new tag.
   - `500 Internal Server Error` on failure.
 
 ### Add Child Tag
 
 - **URL**: `/addChild`
 - **Method**: `POST`
-- **Description**: Adds a new child tag under a specified parent.
-- **Body Parameters**:
-  - `parentId` (string): The ID of the parent tag.
-  - `tagName` (string): The name of the tag.
-  - `order` (number): The order of the tag under the parent.
+- **Description**: Adds a new child tag under a specified parent tag. The API expects the following body parameters:
+  - `parentId` (string): ID of the parent tag under which the child tag will be added.
+  - `tagName` (string): Name of the child tag.
+  - `order` (number): Position of the child tag relative to its siblings.
 - **Response**:
-  - `200 OK` with the ID of the newly created tag.
+  - `200 OK` on successful creation, returns the ID of the new child tag.
   - `500 Internal Server Error` on failure.
 
 ### Remove Child Tag
 
 - **URL**: `/removeChild`
 - **Method**: `DELETE`
-- **Description**: Removes a tag and all its descendants.
-- **Body Parameters**:
-  - `parentId` (string): The ID of the parent tag.
+- **Description**: Removes a tag and all its descendants from the database. The API expects the following body parameter:
+  - `parentId` (string): ID of the parent tag whose subtree (including itself) needs to be deleted.
 - **Response**:
   - `200 OK` on successful deletion.
   - `500 Internal Server Error` on failure.
@@ -87,10 +79,9 @@ The server will be running on `http://localhost:3000`.
 
 - **URL**: `/updateChild`
 - **Method**: `PUT`
-- **Description**: Updates the `tagName` of a specified tag.
-- **Body Parameters**:
-  - `parentId` (string): The ID of the tag to be updated.
-  - `tagName` (string): The new name of the tag.
+- **Description**: Updates the `tagName` of a specified tag. The API expects the following body parameters:
+  - `parentId` (string): ID of the tag to be updated.
+  - `tagName` (string): New name for the tag.
 - **Response**:
   - `200 OK` on successful update.
   - `500 Internal Server Error` on failure.
@@ -99,27 +90,32 @@ The server will be running on `http://localhost:3000`.
 
 - **URL**: `/getAll`
 - **Method**: `GET`
-- **Description**: Retrieves all tags in the database.
+- **Description**: Retrieves all tags from the database.
 - **Response**:
-  - `200 OK` with the list of tags.
+  - `200 OK` on successful retrieval, returns an array of all tags.
   - `500 Internal Server Error` on failure.
 
 ### Move Child Tag
 
 - **URL**: `/moveChild`
 - **Method**: `PUT`
-- **Description**: Moves a tag from one parent to another within the hierarchy and updates the order accordingly.
-- **Body Parameters**:
-  - `parentId` (string): The ID of the tag to be moved.
-  - `tagName` (string): The name of the tag to be moved.
+- **Description**: Moves a tag from one parent to another within the hierarchy and updates the order accordingly. The API expects the following body parameters:
+  - `tagName` (string): Name of the tag to be moved.
+  - `parentId` (string): ID of the new parent tag under which the tag should be moved.
 - **Response**:
   - `200 OK` on successful move.
-  - `400 Bad Request` if the move is not valid.
-  - `500 Internal Server Error` on failure.
+  - `400 Bad Request` if the requested tag or parent doesn't exist or the move is invalid.
+  - `500 Internal Server Error` on other failures.
+
+  - **DFS Traversal Explanation**: The `moveChild` API utilizes Depth-First Search (DFS) traversal to find the correct position for the tag within the hierarchy before updating its `parentId` and `order`. DFS recursively explores each branch of the tag hierarchy until it finds the appropriate tag to move.
+
 
 ## Technologies Used
 
-- **Node.js**: JavaScript runtime for building the server.
-- **Express**: Web framework for Node.js.
-- **MongoDB**: NoSQL database for storing tags.
-- **Mongoose**: ODM for MongoDB.
+- Node.js
+- Express
+- MongoDB
+- Mongoose
+- jQuery
+- EJS
+- CSS

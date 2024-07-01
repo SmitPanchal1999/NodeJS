@@ -1,6 +1,6 @@
 # Tree View File Structure Project 
 
-This project is a RESTful API for managing a hierarchical tree structure of tags using Express and MongoDB. It supports various operations such as adding root tags, adding child tags, removing child tags along with their descendants, updating tags, retrieving all tags, and moving child tags within the hierarchy.
+This project is a RESTful API for managing a hierarchical tree structure of tags using EJS, CSS, NodeJS, Express and MongoDB. It supports various operations such as adding root tags, adding child tags, removing child tags along with their descendants, updating tags, retrieving all tags, and moving child tags within the hierarchy.
 
 ## Table of Contents
 
@@ -19,8 +19,8 @@ This project is a RESTful API for managing a hierarchical tree structure of tags
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-username/tag-management-api.git
-    cd tag-management-api
+    git clone https://github.com/your-username/Tree-view_exercise.git
+    cd Tree-view_exercise
     ```
 
 2. Install dependencies:
